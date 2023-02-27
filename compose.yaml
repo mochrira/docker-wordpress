@@ -1,0 +1,15 @@
+version: '3'
+name: wordpress
+services:
+  web:
+    container_name: wordpress_web
+    image: wordpress:latest
+    volumes:
+      - ./private/wordpress:/var/www/html
+    networks:
+      - wordpress
+
+networks:
+  wordpress:
+    driver: bridge
+    name: wordpress
