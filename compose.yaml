@@ -2,8 +2,11 @@ version: '3'
 name: wordpress
 services:
   web:
-    container_name: wordpress_web
-    image: wordpress:latest
+    container_name: wordpress_container
+    image: mochrira/wordpress:latest
+    build: 
+      context: ./
+      dockerfile: dockerfile
     volumes:
       - ./private/wordpress:/var/www/html
     networks:
