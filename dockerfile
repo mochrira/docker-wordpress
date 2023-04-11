@@ -1,4 +1,4 @@
-FROM wordpress:latest
+FROM wordpress:php7.4-apache
 RUN groupadd -g 1000 wordpress
 RUN useradd -m -g 1000 -u 1000 wordpress
 RUN chown -R wordpress:wordpress /var/www/html

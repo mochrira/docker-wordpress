@@ -1,0 +1,12 @@
+version: '3'
+name: wordpress-development
+services:
+  wordpress-dev:
+    container_name: wordpress_dev
+    image: mochrira/wordpress-dev:latest
+    build: 
+      context: ./
+      dockerfile: dockerfile
+    volumes:
+      - ./example:/home/node/app
+      - $HOME/wordpress:/home/node/wordpress
