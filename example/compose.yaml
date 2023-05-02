@@ -4,13 +4,9 @@ services:
   web:
     container_name: wordpress
     image: mochrira/wordpress:latest
-    build: 
-      context: ./
-      dockerfile: dockerfile
     volumes:
-      - $HOME/wordpress:/var/www/html
-      - $HOME/repository/aida-theme:/home/wordpress/aida-theme
-      - $HOME/repository/platinum-theme:/home/wordpress/platinum-theme
+      - $PWD/public:/var/www/html
+      - $PWD/projects:/home/wordpress/projects
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.wordpress.rule=Host(`wordpress.local`) || HostRegexp(`wordpress.local `, `{subdomain:[a-z]+}.wordpress.local`)"
@@ -18,11 +14,12 @@ services:
     networks:
       - environment
       - database
-    restart: unless-stopped
 
 networks:
   environment:
+    name: environment
     external: true
-
+  
   database:
+    name: database
     external: true
