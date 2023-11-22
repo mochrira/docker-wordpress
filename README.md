@@ -1,39 +1,64 @@
 # Wordpress
 
-## Create Wordpress Directory
+Wordpress development environment for Wajek Studio. This Image based on mochrira/php:8-apache.
+
+## Getting Started
+
+Note : Wordpress needs to be running on domain style URL (e.g. wordpress.local, wp.local) not Port style (e.g localhost:8000). So you need Traefik or Nginx Proxy Manager to handle domain proxy. In this example, we use traefik with domain `wordpress.local`.
+
+Create public wordpress directory, (e.g. public)
 
 ```
-mkdir -p private/wordpress
-sudo chmod 777 -R private/wordpress
+$ mkdir public
 ```
 
-## Build Wordpress
+Then, create compose.yml with following content
 
 ```
-docker compose -f compose.yaml up -d --build
+version: '3.0'
+name: wordpress
+services:
+  db:
+    container_name: wordpress_db
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=p4ssw0rd
+      - MYSQL_DATABASE=wordpress
+    networks:
+      - wordpress
+
+  wp:
+    container_name: wordpress_container
+    image: mochrira/wordpress:latest
+    volumes:
+      - ./public:/var/www/html
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress.rule=Host(`wordpress.local`)"
+      - "traefik.http.services.wordpress.loadbalancer.server.port=80"
+    networks:
+      - wordpress
+
+networks:
+  wordpress:
+    name: wordpress
 ```
 
-## Connect to Database Network
-
-This repository doesn't contains mariadb container, so you need to setup mariadb your self or follow instruction on my docker-database repository. To setup wordpress using existing database installation, you need to open your portainer, connect wordpress to database network or execute following command
+Then, run the composed file
 
 ```
-docker network connect database wordpress
+$ docker compose -f compose.yml up -d --build
 ```
 
-## Configure Nginx Proxy Manager
+Your wordpress accessible on http://wordpress.local/
 
-Open your /etc/hosts, add following lines
+## Setup
 
-```
-127.0.0.1 wordpress.local
-::1 wordpress.local
-```
-
-Then, open your portainer, connect nginx to wordpresss network or execute following command
+On wordpress setup screen, specify options like below :
 
 ```
-docker network connect wordpresss nginx
+Database Host: db
+Database Username: root
+Database Password: p4ssw0rd
+Database Name: wordpress
 ```
-
-Then, open Nginx Proxy Manager web interface, add proxy host wordpress.local refers to http://web.wordpress:80/
